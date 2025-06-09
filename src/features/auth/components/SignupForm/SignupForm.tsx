@@ -10,10 +10,12 @@ import Link from "next/link"
 import { lusitana } from "@/accets/fonts/fonts"
 import { signupFormSchema, SignupFormValues } from "./SignupSchema"
 import { Checkbox } from "@/components/ui/checkbox"
+import { apiPath } from "@/lib/api/utils"
+import { toast, ToastContainer } from 'react-toastify';
+import { useRouter } from "next/navigation"
 
-
-
-const SigninForm = () => {
+const SignupForm = () => {
+    const router = useRouter();
     // 1. Define your form.
     const form = useForm<SignupFormValues>({
         resolver: zodResolver(signupFormSchema),
@@ -27,10 +29,36 @@ const SigninForm = () => {
         },
     });
     const onSubmit = async (data: SignupFormValues) => {
-        console.log("Form submitted>>", data);
+        try {
+            const response = await fetch(apiPath("/api/users/signup"), {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const result = await response.json();
+
+            if (!result.message) {
+                toast.error(result.error)
+                console.log("No result", result.error);
+            } else {
+                console.log("Check result", result)
+                toast.success("Đăng ký thành công");
+
+                setTimeout(() => {
+                    router.push('/login');
+                }, 1500);
+            }
+        } catch (error) {
+            console.error("Fetch error:", error);
+            toast.error("Lỗi không xác định");
+        }
     };
+
     return (
         <div className="p-10 shadow-xl">
+            <ToastContainer />
             {/* <pre>{JSON.stringify(form.formState.errors, null, 2)}</pre> */}
 
             <p className={`${lusitana.className} text-3xl font-bold mb-2`}>Create to share your feeling!</p>
@@ -176,4 +204,4 @@ const SigninForm = () => {
         </div>
     )
 }
-export default SigninForm;
+export default SignupForm;

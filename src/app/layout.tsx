@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "@/app/globals.css"
 import { inter } from '@/accets/fonts/fonts';
 import NavBar from "@/components/headers/navbar";
+import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -17,10 +18,10 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${inter.className} antialiased`}
-      >
-        <div className="md:px-30"><NavBar /></div>
+      ><AuthProvider>
+          <div className="md:px-30"><NavBar /></div>
 
-        {children}
+          {children}</AuthProvider>
       </body>
     </html>
   );

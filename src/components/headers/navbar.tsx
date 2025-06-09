@@ -7,16 +7,18 @@ import {
     NavigationMenuTrigger,
     navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
-import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { posts } from "@/lib/slug-data"
 import { lusitana } from "@/accets/fonts/fonts"
 import HeaderMobile from "./mobile.header"
+import UserHeader from "./user.header"
+import { Suspense } from "react"
 
 const NavBar = () => {
     const get3Post = posts.slice(0, 3);
+
     return (
-        <div className="grid grid-cols-3 justify-between items-center py-2 w-full max-w-screen-xl shadow-sm mx-auto">
+        <div className="grid grid-cols-3 justify-between items  -center py-2 w-full max-w-screen-xl shadow-sm mx-auto">
             <div className="hidden md:flex">
                 <NavigationMenu>
                     <NavigationMenuList>
@@ -69,11 +71,11 @@ const NavBar = () => {
             </div>
             <HeaderMobile />
             <div className={`${lusitana.className} left-1/2 transform -translate-x-1/2 md:static md:translate-x-0 md:translate-y-0 md:text-center text-4xl font-bold`} >Blog</div>
+            { }
             <div className="flex justify-end col-3 space-x-2">
-                <Link href='/login'>
-                    <Button>Sign in</Button></Link>
-                <Link href='/register'>
-                    <Button className="bg-secondary text-black md:ml-5 hover:text-white">Sign up</Button></Link>
+                <Suspense fallback={<p>Loading...</p>}>
+                    <UserHeader />
+                </Suspense>
             </div>
         </div>
     )
