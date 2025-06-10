@@ -71,6 +71,7 @@ const SigninForm = () => {
             },
             (error) => {
                 console.log(error);
+                toast.error(error)
             },
         )
     }

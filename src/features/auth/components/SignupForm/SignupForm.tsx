@@ -10,9 +10,10 @@ import Link from "next/link"
 import { lusitana } from "@/accets/fonts/fonts"
 import { signupFormSchema, SignupFormValues } from "./SignupSchema"
 import { Checkbox } from "@/components/ui/checkbox"
-import { apiPath } from "@/lib/api/utils"
 import { toast, ToastContainer } from 'react-toastify';
 import { useRouter } from "next/navigation"
+import { asyncHandlerWrapper } from "@/helper/api"
+import { signUp } from "@/lib/action/auth"
 
 const SignupForm = () => {
     const router = useRouter();
@@ -28,34 +29,52 @@ const SignupForm = () => {
             accept: false,
         },
     });
+    // const onSubmit = async (data: SignupFormValues) => {
+    //     try {
+    //         const response = await fetch(apiPath("/api/users/signup"), {
+    //             method: "POST",
+    //             body: JSON.stringify(data),
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //         });
+    //         const result = await response.json();
+
+    //         if (!result.message) {
+    //             toast.error(result.error)
+    //             console.log("No result", result.error);
+    //         } else {
+    //             console.log("Check result", result)
+    //             toast.success("Đăng ký thành công");
+
+    //             setTimeout(() => {
+    //                 router.push('/login');
+    //             }, 1500);
+    //         }
+    //     } catch (error) {
+    //         console.error("Fetch error:", error);
+    //         toast.error("Lỗi không xác định");
+    //     }
+    // };
     const onSubmit = async (data: SignupFormValues) => {
-        try {
-            const response = await fetch(apiPath("/api/users/signup"), {
-                method: "POST",
-                body: JSON.stringify(data),
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            const result = await response.json();
-
-            if (!result.message) {
-                toast.error(result.error)
-                console.log("No result", result.error);
-            } else {
-                console.log("Check result", result)
-                toast.success("Đăng ký thành công");
-
-                setTimeout(() => {
-                    router.push('/login');
-                }, 1500);
-            }
-        } catch (error) {
-            console.error("Fetch error:", error);
-            toast.error("Lỗi không xác định");
-        }
-    };
-
+        await asyncHandlerWrapper(
+            async () => {
+                const result = await signUp(data);
+                if (result && result.user) {
+                    console.log("check register", result);
+                    toast.success("Đăng ký thành công");
+                    router.push('/login')
+                } else {
+                    toast.error(result.error);
+                    return
+                }
+            },
+            (error) => {
+                console.log("Lỗi api", error);
+                toast.error(error)
+            },
+        )
+    }
     return (
         <div className="p-10 shadow-xl">
             <ToastContainer />

@@ -17,6 +17,7 @@ type AuthContextType = {
     login: (user: User, accessToken: string) => void;
     logout: () => void;
     setIsAuthenticated: (v: boolean) => void;
+    isLoading: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -24,7 +25,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [user, setUser] = useState<User | null>(null);
-
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const refreshAccessToken = async () => {
         try {
             const res = await fetch(apiPath('/api/auth/refresh'), {
@@ -64,7 +65,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                     },
                     credentials: 'include', //Send cookie with request
                 });
-
+                setIsLoading(false);
                 //  token hết hạn, refresh
                 if (res.status === 401) {
                     const newToken = await refreshAccessToken();
@@ -130,7 +131,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, setIsAuthenticated, isAuthenticated, login, logout }}>
+        <AuthContext.Provider value={{ user, setIsAuthenticated, isAuthenticated, isLoading, login, logout }}>
             {children}
         </AuthContext.Provider>
     );
