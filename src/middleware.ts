@@ -1,37 +1,45 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Các route không cần authentication
-const publicRoutes = ['/login', '/register', '/about-us', '/home', '/api/users/signin', '/api/users/signup'];
+// Chỉ các trang *page* public (không phải API) mới lọt vào đây
+const publicPages = ['/about-us', '/home'];
+
+// Các route API thì matcher đã bao phủ, không cần liệt kê ở đây
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const token = request.cookies.get('refreshToken')?.value;
 
-  // Kiểm tra nếu là public route
-  if (publicRoutes.some((route) => pathname.startsWith(route))) {
+  // 1. Nếu đã login (có token) mà đi vào /login hoặc /register → chuyển về /home
+  if ((pathname === '/login' || pathname === '/register') && token) {
+    return NextResponse.redirect(new URL('/home', request.url));
+  }
+
+  // 2. Nếu chưa login mà truy cập page public (ví dụ /home, /about-us) → cho tiếp
+  if (publicPages.some(page => pathname === page)) {
     return NextResponse.next();
   }
 
-  // Kiểm tra access token
-  const token = request.cookies.get('refreshToken')?.value;
+  // 3. Nếu đang gọi API signin/signup thì cho tiếp
+  if (
+    pathname.startsWith('/api/users/signin') ||
+    pathname.startsWith('/api/users/signup')
+  ) {
+    return NextResponse.next();
+  }
+
+  // 4. Các route còn lại đều là protected → nếu không có token thì ép về login
   if (!token) {
-    // Chuyển hướng về trang login nếu không có token
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
+  // 5. Ngược lại, có token thì cho tiếp
   return NextResponse.next();
 }
 
-// Chỉ áp dụng middleware cho các route cần bảo vệ
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     */
+    // Áp dụng cho mọi đường dẫn trừ static, images, favicon, public folder
     '/((?!_next/static|_next/image|favicon.ico|public).*)',
   ],
 };
