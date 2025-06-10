@@ -63,7 +63,7 @@ const SigninForm = () => {
                     console.log("check login", result.user, result.accessToken);
                     login(result.user, result.accessToken);
                     toast.success("Đăng nhập thành công");
-                    router.push('/')
+                    router.push('/home')
                 } else {
                     toast.error(result.error);
                     return

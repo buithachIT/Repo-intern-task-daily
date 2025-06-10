@@ -25,7 +25,7 @@ const NavBar = () => {
                         {/* Item home */}
                         <NavigationMenuItem>
                             <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                                <Link href="/">Home</Link>
+                                <Link href="/home">Home</Link>
                             </NavigationMenuLink>
                         </NavigationMenuItem>
 
