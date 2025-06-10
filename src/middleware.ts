@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 // Chỉ các trang *page* public (không phải API) mới lọt vào đây
-const publicPages = ['/about-us', '/home'];
+const publicPages = ['/about-us', '/home', '/login', '/register'];
 
 // Các route API thì matcher đã bao phủ, không cần liệt kê ở đây
 

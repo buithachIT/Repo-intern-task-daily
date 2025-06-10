@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # Database service (MongoDB example)
+  db:
+    image: mongo:latest
+    container_name: db
+    environment:
+      MONGODB_URI: MONGO_DB_URL=mongodb+srv://Buithach311:Q9s22sTjafInw9bV@cluster0.iy8lx.mongodb.net/reactfresher
+
+    ports:
+      - '27017:27017'
+    volumes:
+      - db_data:/data/db
+    networks:
+      - app-network
+
+  # Next.js application
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nextjs_app
+    ports:
+      - '3000:3000'
+    environment:
+      # Next.js sẽ dùng biến này (cấu hình ở next.config.js hoặc process.env)
+      MONGODB_URI: mongodb://admin:secret@db:27017/mydb?authSource=admin
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+volumes:
+  db_data:
+
+networks:
+  app-network:
+    driver: bridge
