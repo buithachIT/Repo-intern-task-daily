@@ -1,43 +1,45 @@
-import { NextResponse } from 'next/server';
+import { badRequest, ok, serverError } from '@/helper/apiRes';
 
 export async function POST(req: Request) {
-    try {
-        const body = await req.json();
-        const {
-            firstName,
-            lastName,
-            email,
-            password,
-            confirmPassword,
-            accept,
-        } = body;
+  try {
+    const { firstName, lastName, email, password, confirmPassword, accept } =
+      await req.json();
 
-        // Validate đơn giản
-        if (!accept) {
-            return NextResponse.json({ error: 'Please accept the terms' }, { status: 400 });
-        }
-
-        if (!email || !password || !firstName || !lastName) {
-            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-        }
-
-        if (password !== confirmPassword) {
-            return NextResponse.json({ error: 'Passwords do not match' }, { status: 400 });
-        }
-
-        // Mô phỏng đăng ký thành công
-        return NextResponse.json({
-            message: 'User registered successfully',
-            user: {
-                id: 'mock-id-123',
-                firstName,
-                lastName,
-                email,
-            },
-        }, { status: 201 });
-
-    } catch (error) {
-        console.error('Signup error:', error);
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    if (!accept) {
+      return badRequest({
+        code: 'TERMS_NOT_ACCEPTED',
+        message: 'You must accept our terms & conditions',
+      });
     }
+
+    if (!firstName || !lastName || !email || !password) {
+      return badRequest({
+        code: 'MISSING_FIELDS',
+        message: 'Some required fields are missing',
+        details: { firstName, lastName, email, password },
+      });
+    }
+
+    if (password !== confirmPassword) {
+      return badRequest({
+        code: 'PASSWORD_MISMATCH',
+        message: 'Passwords do not match',
+      });
+    }
+
+    const user = {
+      id: 'mock-id-123',
+      firstName,
+      lastName,
+      email,
+    };
+
+    return ok({ user }, 201);
+  } catch (err) {
+    console.error('Signup error:', err);
+    return serverError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Could not process sign up request',
+    });
+  }
 }

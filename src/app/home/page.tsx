@@ -1,5 +1,5 @@
-'use client'
-import { useAuth } from "@/context/AuthContext";
+'use client';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Home() {
   const { user } = useAuth();

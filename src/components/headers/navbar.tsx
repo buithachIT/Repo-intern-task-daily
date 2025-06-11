@@ -6,17 +6,16 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger,
     navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
-import Link from "next/link"
-import { posts } from "@/lib/slug-data"
-import { lusitana } from "@/accets/fonts/fonts"
-import HeaderMobile from "./mobile.header"
-import UserHeader from "./user.header"
-import { Suspense } from "react"
+} from '@/components/ui/navigation-menu';
+import Link from 'next/link';
+import { posts } from '@/lib/slug-data';
+import { lusitana } from '@/config/fonts';
+import HeaderMobile from './mobile.header';
+import UserHeader from './user.header';
+import { Suspense } from 'react';
 
 const NavBar = () => {
     const get3Post = posts.slice(0, 3);
-
     return (
         <div className="grid grid-cols-3 justify-between items  -center py-2 w-full max-w-screen-xl shadow-sm mx-auto">
             <div className="hidden md:flex">
@@ -30,7 +29,7 @@ const NavBar = () => {
                         </NavigationMenuItem>
 
                         {/* Item Blog */}
-                        <NavigationMenuItem >
+                        <NavigationMenuItem>
                             <NavigationMenuTrigger>Blog</NavigationMenuTrigger>
                             <NavigationMenuContent>
                                 <ul className="grid z-50 gap-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
@@ -40,9 +39,7 @@ const NavBar = () => {
                                                 className="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b p-6 no-underline outline-hidden select-none focus:shadow-md"
                                                 href="/blog/category"
                                             >
-                                                <div className="mt-4 mb-2 text-lg font-medium">
-                                                    Category
-                                                </div>
+                                                <div className="mt-4 mb-2 text-lg font-medium">Category</div>
                                                 <p className="text-muted-foreground text-sm leading-tight">
                                                     Category of posts
                                                 </p>
@@ -50,11 +47,7 @@ const NavBar = () => {
                                         </NavigationMenuLink>
                                     </li>
                                     {get3Post.map((p) => (
-
-                                        <ListItem
-                                            key={p.title}
-                                            href={`/blog/${p.slug}`}
-                                            title={p.title}>
+                                        <ListItem key={p.title} href={`/blog/${p.slug}`} title={p.title}>
                                             {p.content}
                                         </ListItem>
                                     ))}
@@ -67,10 +60,14 @@ const NavBar = () => {
                             </NavigationMenuLink>
                         </NavigationMenuItem>
                     </NavigationMenuList>
-                </NavigationMenu >
+                </NavigationMenu>
             </div>
             <HeaderMobile />
-            <div className={`${lusitana.className} left-1/2 transform -translate-x-1/2 md:static md:translate-x-0 md:translate-y-0 md:text-center text-4xl font-bold`} >Blog</div>
+            <div
+                className={`${lusitana.className} left-1/2 transform -translate-x-1/2 md:static md:translate-x-0 md:translate-y-0 md:text-center text-4xl font-bold`}
+            >
+                Blog
+            </div>
             { }
             <div className="flex justify-end col-3 space-x-2">
                 <Suspense fallback={<p>Loading...</p>}>
@@ -78,26 +75,24 @@ const NavBar = () => {
                 </Suspense>
             </div>
         </div>
-    )
-}
+    );
+};
 function ListItem({
     title,
     children,
     href,
     ...props
-}: React.ComponentPropsWithoutRef<"li"> & { href: string }) {
+}: React.ComponentPropsWithoutRef<'li'> & { href: string }) {
     return (
         <li {...props}>
             <NavigationMenuLink asChild>
                 <Link href={href}>
                     <div className="text-sm leading-none font-medium">{title}</div>
-                    <p className="text-muted-foreground line-clamp-2 text-sm leading-snug">
-                        {children}
-                    </p>
+                    <p className="text-muted-foreground line-clamp-2 text-sm leading-snug">{children}</p>
                 </Link>
             </NavigationMenuLink>
         </li>
-    )
+    );
 }
 
-export default NavBar
+export default NavBar;

@@ -1,5 +1,7 @@
-import { NextResponse } from 'next/server';
+import { ok, serverError, unauthorized } from '@/helper/apiRes';
 import { signJwt, signRefreshToken } from '@/lib/jwt/auth';
+
+
 
 const FAKE_USER = {
   id: '1',
@@ -10,37 +12,48 @@ const FAKE_USER = {
 };
 
 export async function POST(req: Request) {
-  const body = await req.json();
-  const { email, password } = body;
+  try {
+    const { email, password } = await req.json();
 
-  if (email !== FAKE_USER.email || password !== FAKE_USER.password) {
-    return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+    if (email !== FAKE_USER.email || password !== FAKE_USER.password) {
+      return unauthorized({
+        code: 'INVALID_CREDENTIALS',
+        message: 'Email or password is incorrect',
+      });
+    }
+
+    const userPayload = {
+      id: FAKE_USER.id,
+      firstName: FAKE_USER.firstName,
+      email: FAKE_USER.email,
+    };
+
+    const accessToken = signJwt(userPayload);
+    const refreshToken = signRefreshToken(userPayload);
+
+    const response = ok(
+      {
+        user: userPayload,
+        accessToken,
+      },
+      200
+    );
+    response.cookies.set({
+      name: 'refreshToken',
+      value: refreshToken,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+      maxAge: 7 * 24 * 60 * 60, // 7 ngày
+    });
+
+    return response;
+  } catch (err) {
+    console.error('Signin error:', err);
+    return serverError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Could not process sign in request',
+    });
   }
-
-  const userPayload = {
-    id: FAKE_USER.id,
-    email: FAKE_USER.email,
-    firstName: FAKE_USER.firstName,
-  };
-
-  const accessToken = signJwt(userPayload);
-  const refreshToken = signRefreshToken(userPayload);
-
-  const response = NextResponse.json({
-    accessToken,
-    user: userPayload,
-  });
-
-  // Set refresh token in HttpOnly cookie
-  response.cookies.set({
-    name: 'refreshToken',
-    value: refreshToken,
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
-    path: '/',
-  });
-
-  return response;
 }
