@@ -2,6 +2,11 @@ import { SigninFormValues } from "@/features/auth/components/SigninForm/SigninSc
 import { apiPath } from "../api/utils";
 import { SignupFormValues } from "@/features/auth/components/SignupForm/SignupSchema";
 
+// REVIEW: Add more cases when we receive error from BE side with respose.ok !== true
+/** 
+ * E.g. When user signup with wrong data and catch and show this error for user
+ */
+
 export const signUp = async (user: SignupFormValues) => {
     const response = await fetch(apiPath("/api/users/signups/"), {
         method: "POST",

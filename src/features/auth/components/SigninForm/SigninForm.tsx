@@ -28,6 +28,7 @@ const SigninForm = () => {
             rememberMe: false,
         },
     });
+    // REVIEW: Remove unused code
     // const onSubmit = async (data: SigninFormValues) => {
     //     try {
     //         const response = await fetch(apiPath("/api/users/signin"), {

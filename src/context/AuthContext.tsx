@@ -14,15 +14,18 @@ type User = {
 type AuthContextType = {
     user: User | null;
     isAuthenticated: boolean;
+    // REVIEW: login function don't perform any action to BE side, consider to change it's name to updateUser
     login: (user: User, accessToken: string) => void;
     logout: () => void;
     setIsAuthenticated: (v: boolean) => void;
+    // REVIEW: don't see using anywhere
     isLoading: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+    // REVIEW: Don't need isAuthenticated state here due to we already had user data for checking user is authenticated
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -52,6 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const fetchUser = async () => {
             const token = localStorage.getItem('token');
             if (!token) {
+                // REVIEW: Remove all log or can setup to see log for development env
                 console.log('No token found in localStorage');
                 return;
             }
@@ -63,6 +67,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
+                    // REVIEW: due to using bearer token we don't use cookie for verification
                     credentials: 'include', //Send cookie with request
                 });
                 setIsLoading(false);
@@ -122,10 +127,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.log('Logging out user');
         setUser(null);
         setIsAuthenticated(false);
+        // REVIEW: Move 'user' 'token' to constant config storage key
         localStorage.removeItem('user');
         localStorage.removeItem('token');
         fetch(apiPath('/api/auth/logout'), {
             method: 'POST',
+            // REVIEW: Logout don't need sending cookie to server
             credentials: 'include',
         });
     };

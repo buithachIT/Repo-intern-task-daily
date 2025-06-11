@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-
+// REVIEW: move /about-us /home ... to config file with constant values
 // Chỉ các trang *page* public (không phải API) mới lọt vào đây
 const publicPages = ['/about-us', '/home', '/login', '/register'];
 
@@ -21,6 +21,10 @@ export function middleware(request: NextRequest) {
   }
 
   // 3. Nếu đang gọi API signin/signup thì cho tiếp
+  // REVIEW: Consider to move this config to matcher config end of this file
+  /**
+   * /((?!api/_next/static|_next/image|favicon.ico|public).*)
+   */
   if (
     pathname.startsWith('/api/users/signin') ||
     pathname.startsWith('/api/users/signup')
