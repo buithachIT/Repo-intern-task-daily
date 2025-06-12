@@ -1,43 +1,35 @@
-import { NextResponse } from 'next/server';
+import { signupFormSchema } from '@/features/auth/components/SignupForm/SignupSchema';
+import { badRequest, ok, serverError } from '@/helper/apiRes';
 
 export async function POST(req: Request) {
-    try {
-        const body = await req.json();
-        const {
-            firstName,
-            lastName,
-            email,
-            password,
-            confirmPassword,
-            accept,
-        } = body;
+  try {
+    const body = await req.json();
 
-        // Validate đơn giản
-        if (!accept) {
-            return NextResponse.json({ error: 'Please accept the terms' }, { status: 400 });
-        }
-
-        if (!email || !password || !firstName || !lastName) {
-            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-        }
-
-        if (password !== confirmPassword) {
-            return NextResponse.json({ error: 'Passwords do not match' }, { status: 400 });
-        }
-
-        // Mô phỏng đăng ký thành công
-        return NextResponse.json({
-            message: 'User registered successfully',
-            user: {
-                id: 'mock-id-123',
-                firstName,
-                lastName,
-                email,
-            },
-        }, { status: 201 });
-
-    } catch (error) {
-        console.error('Signup error:', error);
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    const parse = signupFormSchema.safeParse(body);
+    if (!parse.success) {
+      const errors = parse.error.flatten().fieldErrors;
+      return badRequest({
+        code: 'VALIDATION_ERROR',
+        message: 'Invalid signup data',
+        details: errors,
+      });
     }
+    const { firstName, lastName, email, password } = parse.data;
+
+    const user = {
+      id: 'mock-id-123',
+      firstName,
+      lastName,
+      email,
+      password
+    };
+
+    return ok({ user }, 201);
+  } catch (err) {
+    console.error('Signup error:', err);
+    return serverError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Could not process sign up request',
+    });
+  }
 }

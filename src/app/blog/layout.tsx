@@ -1,12 +1,7 @@
-
 import { ReactNode } from 'react';
 
 function BlogLayout({ children }: { children: ReactNode }) {
-    return (
-        <>
-            {children}
-        </>
-    );
+  return <>{children}</>;
 }
 
 export default BlogLayout;

@@ -1,3 +1,1 @@
-export const authServices = {
-
-};
+export const authServices = {};

@@ -1,14 +1,15 @@
-import { NextResponse } from 'next/server';
+import { STORAGE_KEY } from "@/config/storageKeys";
+import { NextResponse } from "next/server";
 
 export async function POST() {
-  const response = NextResponse.json({ success: true });
 
-  response.cookies.set({
-    name: 'refreshToken',
-    value: '',
-    expires: new Date(0),
-    path: '/',
+  const res = new NextResponse(undefined, { status: 204 });
+
+  // Xoá cookie
+  res.cookies.delete({
+    name: STORAGE_KEY.REFRESH_TOKEN,
+    path: "/",
   });
 
-  return response;
+  return res;
 }

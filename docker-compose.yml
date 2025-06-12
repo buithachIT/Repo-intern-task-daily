@@ -1,13 +1,10 @@
-version: '3.8'
-
 services:
   # Database service (MongoDB example)
   db:
     image: mongo:latest
     container_name: db
-    environment:
-      MONGODB_URI: MONGO_DB_URL=mongodb+srv://Buithach311:Q9s22sTjafInw9bV@cluster0.iy8lx.mongodb.net/reactfresher
-
+    env_file:
+      - .env.development
     ports:
       - '27017:27017'
     volumes:

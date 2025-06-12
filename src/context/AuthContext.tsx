@@ -1,144 +1,87 @@
 'use client';
 
-import { apiPath } from '@/lib/api/utils';
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, CSSProperties } from 'react';
+import { STORAGE_KEY } from '@/config/storageKeys';
+import { fetchUserAction } from '@/lib/action/user';
+import { ClipLoader } from "react-spinners";
+import { logoutAPI } from '@/lib/action/auth';
 
-type User = {
-    id: string;
-    email: string;
-    firstName?: string;
-    exp?: number;
-    iat?: number;
-};
+type User = { id: string; email: string; firstName?: string; exp?: number; iat?: number };
 
 type AuthContextType = {
-    user: User | null;
-    isAuthenticated: boolean;
-    login: (user: User, accessToken: string) => void;
-    logout: () => void;
-    setIsAuthenticated: (v: boolean) => void;
-    isLoading: boolean;
+  user: User | null;
+  updateUser: (user: User, accessToken: string) => void;
+  logout: () => void;
+  isLoading: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-    const [user, setUser] = useState<User | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const refreshAccessToken = async () => {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // fetchUser 
+
+  useEffect(() => {
+    const token = localStorage.getItem(STORAGE_KEY.TOKEN);
+    if (token) {
+      setIsLoading(true);
+      const loadUser = async () => {
         try {
-            const res = await fetch(apiPath('/api/auth/refresh'), {
-                method: 'POST',
-                credentials: 'include', // gửi cookie với request
-            });
-
-            const data = await res.json();
-
-            if (res.ok && data.accessToken) {
-                localStorage.setItem('token', data.accessToken);
-                return data.accessToken;
-            } else {
-                throw new Error('Failed to refresh token');
-            }
-        } catch (error) {
-            console.error('Error refreshing token:', error);
-            logout();
-            return null;
+          const { user: u } = await fetchUserAction();
+          setUser(u);
+          localStorage.setItem(STORAGE_KEY.USER, JSON.stringify(u));
+        } catch (err) {
+          console.error('Fetch user failed', err);
+        } finally {
+          setIsLoading(false);
         }
-    };
+      };
+      loadUser();
+    }
+  }, []);
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                console.log('No token found in localStorage');
-                return;
-            }
+  const updateUser = (u: User, accessToken: string) => {
+    setUser(u);
+    localStorage.setItem(STORAGE_KEY.TOKEN, accessToken);
+    localStorage.setItem(STORAGE_KEY.USER, JSON.stringify(u));
+  };
 
-            try {
-                console.log('Fetching user with token:', token);
-                let res = await fetch(apiPath('/api/users/fetchUser'), {
-                    method: "GET",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                    credentials: 'include', //Send cookie with request
-                });
-                setIsLoading(false);
-                //  token hết hạn, refresh
-                if (res.status === 401) {
-                    const newToken = await refreshAccessToken();
-                    if (!newToken) return;
+  const logout = () => {
+    logoutAPI();
+    setUser(null);
+    localStorage.removeItem(STORAGE_KEY.TOKEN);
+    localStorage.removeItem(STORAGE_KEY.USER);
+  };
 
-                    res = await fetch(apiPath('/api/users/fetchUser'), {
-                        method: "GET",
-                        headers: {
-                            Authorization: `Bearer ${newToken}`,
-                        },
-                        credentials: 'include',
-                    });
-                }
-
-                const data = await res.json();
-                console.log('API Response:', data);
-
-                if (res.ok && data.user) {
-                    console.log('User data received successfully');
-                    const userData: User = {
-                        id: data.user.id,
-                        email: data.user.email,
-                        firstName: data.user.firstName,
-                        exp: data.user.exp,
-                        iat: data.user.iat
-                    };
-                    setUser(userData);
-                    setIsAuthenticated(true);
-                    localStorage.setItem('user', JSON.stringify(userData));
-                } else {
-                    console.log('Failed to fetch user data:', data);
-                    setIsAuthenticated(false);
-                    logout();
-                }
-            } catch (error) {
-                console.error("Error fetching user:", error);
-                setIsAuthenticated(false);
-                logout();
-            }
-        };
-
-        fetchUser();
-    }, []);
-
-    const login = (user: User, accessToken: string) => {
-        console.log('Logging in user:', user);
-        setUser(user);
-        setIsAuthenticated(true);
-        localStorage.setItem('user', JSON.stringify(user));
-        localStorage.setItem('token', accessToken);
-    };
-
-    const logout = () => {
-        console.log('Logging out user');
-        setUser(null);
-        setIsAuthenticated(false);
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
-        fetch(apiPath('/api/auth/logout'), {
-            method: 'POST',
-            credentials: 'include',
-        });
-    };
-
-    return (
-        <AuthContext.Provider value={{ user, setIsAuthenticated, isAuthenticated, isLoading, login, logout }}>
-            {children}
-        </AuthContext.Provider>
-    );
+  return (
+    <> {
+      isLoading === false ?
+        <AuthContext.Provider value={{ user, isLoading, updateUser, logout }}>
+          {children}
+        </AuthContext.Provider >
+        :
+        <ClipLoader
+          loading={isLoading}
+          size={30}
+          cssOverride={override}
+          aria-label="Loading Spinner"
+          data-testid="loader"
+        />
+    }
+    </>
+  );
 };
 
 export const useAuth = () => {
-    const ctx = useContext(AuthContext);
-    if (!ctx) throw new Error('useAuth must be used within AuthProvider');
-    return ctx;
-}; 
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  return ctx;
+};
+const override: CSSProperties = {
+  position: "fixed",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)"
+};
