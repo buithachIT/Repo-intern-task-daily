@@ -14,7 +14,7 @@ import { toast } from "react-toastify"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/AuthContext"
 import { asyncHandlerWrapper } from "@/helper/api"
-import { signIn } from "@/lib/action/auth"
+import { signInAPI } from "@/lib/action/auth"
 
 const SigninForm = () => {
   const router = useRouter();
@@ -31,11 +31,10 @@ const SigninForm = () => {
   const onSubmit = async (data: SigninFormValues) => {
     await asyncHandlerWrapper(
       async () => {
-        const { data: { user, accessToken } } = await signIn(data);
+        const { data: { user, accessToken } } = await signInAPI(data);
         updateUser(user, accessToken);
         toast.success("Đăng nhập thành công");
         router.push('/home');
-
       },
       (error) => {
         toast.error(error || 'Đăng nhập thất bại');

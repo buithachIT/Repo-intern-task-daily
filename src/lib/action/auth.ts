@@ -16,9 +16,14 @@ export type SignInResponse = {
     accessToken: string;
   };
 };
-
-export const signUp = (user: SignupFormValues) =>
+export type FetchUser = {
+  user: {
+    id: string; firstName: string; email: string
+  }
+}
+export const signUpAPI = (user: SignupFormValues) =>
   handleFetch<SignUpResponse>('/api/users/signup/', user);
 
-export const signIn = (user: SigninFormValues) =>
+export const signInAPI = (user: SigninFormValues) =>
   handleFetch<SignInResponse>('/api/users/signin/', user);
+export const logoutAPI = () => handleFetch<SignInResponse>('/api/auth/logout/', undefined, "POST");

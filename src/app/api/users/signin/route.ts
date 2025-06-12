@@ -1,4 +1,5 @@
-import { ok, serverError, unauthorized } from '@/helper/apiRes';
+import { signinFormSchema } from '@/features/auth/components/SigninForm/SigninSchema';
+import { badRequest, ok, serverError, unauthorized } from '@/helper/apiRes';
 import { signJwt, signRefreshToken } from '@/lib/jwt/auth';
 
 
@@ -13,7 +14,19 @@ const FAKE_USER = {
 
 export async function POST(req: Request) {
   try {
-    const { email, password } = await req.json();
+    const body = await req.json();
+
+    const parse = signinFormSchema.safeParse(body);
+    if (!parse.success) {
+      const errors = parse.error.flatten().fieldErrors;
+      return badRequest({
+        code: 'VALIDATION_ERROR',
+        message: 'Invalid signin data',
+        details: errors,
+      });
+    }
+    const { email, password } = parse.data;
+
 
     if (email !== FAKE_USER.email || password !== FAKE_USER.password) {
       return unauthorized({
@@ -38,6 +51,7 @@ export async function POST(req: Request) {
       },
       200
     );
+
     response.cookies.set({
       name: 'refreshToken',
       value: refreshToken,

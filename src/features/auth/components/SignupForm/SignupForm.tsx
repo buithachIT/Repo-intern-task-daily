@@ -20,7 +20,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { asyncHandlerWrapper } from '@/helper/api';
-import { signUp } from '@/lib/action/auth';
+import { signUpAPI } from '@/lib/action/auth';
 
 const SignupForm = () => {
   const router = useRouter();
@@ -39,7 +39,7 @@ const SignupForm = () => {
   const onSubmit = async (data: SignupFormValues) => {
     await asyncHandlerWrapper(
       async () => {
-        await signUp(data);
+        await signUpAPI(data);
         toast.success('Đăng ký thành công');
         router.push('/login');
       },

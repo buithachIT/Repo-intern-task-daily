@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { ROUTES } from '@/config/routes';
-import { StorageKeys } from './config/storageKeys';
+import { STORAGE_KEY } from './config/storageKeys';
 // Chỉ các trang *page* public (không phải API) mới lọt vào đây
 const publicPages = [ROUTES.ABOUT_US, ROUTES.HOME, ROUTES.LOGIN, ROUTES.REGISTER];
 
@@ -9,7 +9,7 @@ const publicPages = [ROUTES.ABOUT_US, ROUTES.HOME, ROUTES.LOGIN, ROUTES.REGISTER
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const token = request.cookies.get(StorageKeys.REFRESH_TOKEN)?.value;
+  const token = request.cookies.get(STORAGE_KEY.REFRESH_TOKEN)?.value;
 
   // 1. Nếu đã login (có token) mà đi vào /login hoặc /register → chuyển về /home
   if ((pathname === ROUTES.LOGIN || pathname === ROUTES.REGISTER) && token) {

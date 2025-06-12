@@ -45,11 +45,24 @@ export const asyncHandlerWrapper = async <T>(
   }
 };
 
-export async function handleFetch<T>(url: string, bodyObj: unknown): Promise<T> {
+export async function handleFetch<T>(
+  url: string,
+  bodyObj?: unknown,
+  method: "GET" | "POST" | "PUT" | "DELETE" = bodyObj ? "POST" : "GET"
+): Promise<T> {
+  const token = typeof window !== "undefined"
+    ? localStorage.getItem("accessToken")
+    : null;
+
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+    ...(token && { Authorization: `Bearer ${token}` }),
+  };
+
   const res = await fetch(apiPath(url), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(bodyObj),
+    method,
+    headers,
+    body: bodyObj ? JSON.stringify(bodyObj) : undefined,
   });
 
   const payload = await res.json().catch(() => null);
@@ -64,3 +77,4 @@ export async function handleFetch<T>(url: string, bodyObj: unknown): Promise<T> 
 
   return payload as T;
 }
+

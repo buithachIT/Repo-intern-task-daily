@@ -1,37 +1,27 @@
+import { signupFormSchema } from '@/features/auth/components/SignupForm/SignupSchema';
 import { badRequest, ok, serverError } from '@/helper/apiRes';
 
 export async function POST(req: Request) {
   try {
-    const { firstName, lastName, email, password, confirmPassword, accept } =
-      await req.json();
+    const body = await req.json();
 
-    if (!accept) {
+    const parse = signupFormSchema.safeParse(body);
+    if (!parse.success) {
+      const errors = parse.error.flatten().fieldErrors;
       return badRequest({
-        code: 'TERMS_NOT_ACCEPTED',
-        message: 'You must accept our terms & conditions',
+        code: 'VALIDATION_ERROR',
+        message: 'Invalid signup data',
+        details: errors,
       });
     }
-
-    if (!firstName || !lastName || !email || !password) {
-      return badRequest({
-        code: 'MISSING_FIELDS',
-        message: 'Some required fields are missing',
-        details: { firstName, lastName, email, password },
-      });
-    }
-
-    if (password !== confirmPassword) {
-      return badRequest({
-        code: 'PASSWORD_MISMATCH',
-        message: 'Passwords do not match',
-      });
-    }
+    const { firstName, lastName, email, password } = parse.data;
 
     const user = {
       id: 'mock-id-123',
       firstName,
       lastName,
       email,
+      password
     };
 
     return ok({ user }, 201);
