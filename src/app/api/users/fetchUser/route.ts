@@ -2,13 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyJwt } from '@/lib/jwt/auth';
 
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get('authorization');
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  const accessToken = req.cookies.get('accessToken');
+  if (!accessToken) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-
-  const token = authHeader.split(' ')[1];
+  const token = accessToken.value;
   const decoded = verifyJwt(token);
 
   if (!decoded) {

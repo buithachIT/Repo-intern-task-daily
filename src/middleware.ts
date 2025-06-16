@@ -22,9 +22,7 @@ export function middleware(request: NextRequest) {
   }
 
   // 3. Nếu đang gọi API signin/signup thì cho tiếp
-  if (pathname.startsWith('/api/users/signin') || pathname.startsWith('/api/users/signup')) {
-    return NextResponse.next();
-  }
+
 
   // 4. Các route còn lại đều là protected → nếu không có token thì ép về login
   if (!token) {
@@ -38,6 +36,6 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // Áp dụng cho mọi đường dẫn trừ static, images, favicon, public folder
-    '/((?!_next/static|_next/image|favicon.ico|public).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
   ],
 };

@@ -1,0 +1,18 @@
+# Thư mục tự sinh (Prisma, build, v.v.)
+**/node_modules/**
+.next/**
+dist/**
+out/**
+build/**
+**/generated/**
+src/generated/**
+
+# Hệ thống Windows (tránh lỗi EPERM)
+C:/Users/*/Cookies/
+C:/Users/*/Local Settings/
+
+# Prisma wasm tự sinh
+src/generated/prisma/wasm.js
+
+# File env, tạm
+.env

@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import '@/app/globals.css';
 import { inter } from '@/config/fonts';
-import NavBar from '@/components/headers/navbar';
 import { AuthProvider } from '@/context/AuthContext';
 import { ToastContainer } from 'react-toastify';
 
@@ -18,12 +17,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
         <AuthProvider>
-          <div className="md:px-30">
-            <NavBar />
-            <ToastContainer />
-          </div>
           {children}
         </AuthProvider>
+        <ToastContainer />
       </body>
     </html>
   );
