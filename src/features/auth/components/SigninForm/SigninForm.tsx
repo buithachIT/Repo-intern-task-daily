@@ -31,10 +31,10 @@ const SigninForm = () => {
   const onSubmit = async (data: SigninFormValues) => {
     await asyncHandlerWrapper(
       async () => {
-        const { data: { user, accessToken } } = await signInAPI(data);
-        updateUser(user, accessToken);
+        const { data: { user } } = await signInAPI(data);
+        updateUser(user);
         toast.success("Đăng nhập thành công");
-        router.push('/home');
+        router.push('/');
       },
       (error) => {
         toast.error(error || 'Đăng nhập thất bại');

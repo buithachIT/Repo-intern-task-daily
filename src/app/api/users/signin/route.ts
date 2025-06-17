@@ -1,16 +1,8 @@
 import { signinFormSchema } from '@/features/auth/components/SigninForm/SigninSchema';
 import { badRequest, ok, serverError, unauthorized } from '@/helper/apiRes';
 import { signJwt, signRefreshToken } from '@/lib/jwt/auth';
-
-
-
-const FAKE_USER = {
-  id: '1',
-  firstName: 'Thạch',
-  lastName: 'Bùi',
-  email: 'admin@example.com',
-  password: '123123123Tt@',
-};
+import prisma from '@/lib/connectDB/prisma';
+import bcrypt from 'bcryptjs';
 
 export async function POST(req: Request) {
   try {
@@ -27,18 +19,30 @@ export async function POST(req: Request) {
     }
     const { email, password } = parse.data;
 
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
 
-    if (email !== FAKE_USER.email || password !== FAKE_USER.password) {
+    if (!user) {
       return unauthorized({
         code: 'INVALID_CREDENTIALS',
         message: 'Email or password is incorrect',
       });
     }
 
+    //Xử lý hashpass tại đây
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return unauthorized({
+        code: 'INVALID_CREDENTIALS',
+        message: 'Email or password is incorrect',
+      });
+    }
+    console.log(email, password);
     const userPayload = {
-      id: FAKE_USER.id,
-      firstName: FAKE_USER.firstName,
-      email: FAKE_USER.email,
+      id: user.id,
+      firstName: user.firstName || undefined,
+      email: user.email,
     };
 
     const accessToken = signJwt(userPayload);
@@ -47,7 +51,6 @@ export async function POST(req: Request) {
     const response = ok(
       {
         user: userPayload,
-        accessToken,
       },
       200
     );
@@ -60,6 +63,15 @@ export async function POST(req: Request) {
       sameSite: 'strict',
       path: '/',
       maxAge: 7 * 24 * 60 * 60, // 7 ngày
+    });
+    response.cookies.set({
+      name: 'accessToken',
+      value: accessToken,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+      maxAge: 5 * 60, //5phút
     });
 
     return response;

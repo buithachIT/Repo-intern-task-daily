@@ -20,16 +20,16 @@ const UserHeader = () => {
       {!user?.id ? (
         <>
           <Link href="/login">
-            <Button>Sign in</Button>
+            <Button className="bg-secondary text-black md:ml-5 md:h-12 hover:bg-transparent hover:border-inherit">SIGN IN</Button>
           </Link>
           <Link href="/register">
-            <Button className="bg-secondary text-black md:ml-5 hover:text-white">Sign up</Button>
+            <Button className="text-white border-[#014973] md:ml-5 hover:text-white md:h-12 hover:bg-[#80c8f1] hover:border-inherit">SIGN UP</Button>
           </Link>
         </>
       ) : (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline">Chào {user?.firstName}</Button>
+            <Button className='h-12 hover:bg-[#5c98bb]'>Chào {user?.firstName}</Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="start">
             <DropdownMenuLabel>Bạn cần gì?</DropdownMenuLabel>

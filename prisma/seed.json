@@ -1,0 +1,43 @@
+{
+  "users": [
+    {
+      "email": "test1@example.com",
+      "firstName": "Test",
+      "lastName": "User 1",
+      "password": "123123123Tt@",
+      "posts": [
+        {
+          "title": "First Post",
+          "content": "This is my first post",
+          "published": true
+        }
+      ]
+    },
+    {
+      "email": "test2@example.com",
+      "firstName": "Test",
+      "lastName": "User 2",
+      "password": "123123123Tt@",
+      "posts": [
+        {
+          "title": "Hello World",
+          "content": "This is a test post",
+          "published": true
+        }
+      ]
+    },
+    {
+      "email": "admin@example.com",
+      "firstName": "Admin",
+      "lastName": "User",
+      "password": "123123123Tt@",
+      "posts": [
+        {
+          "title": "Admin Post",
+          "content": "This is an admin post",
+          "published": true
+        }
+      ]
+    }
+  ]
+}

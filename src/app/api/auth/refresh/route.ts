@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
       firstName: decoded.firstName,
     });
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       accessToken,
       user: {
         id: decoded.id,
@@ -29,6 +29,18 @@ export async function POST(req: NextRequest) {
         firstName: decoded.firstName,
       },
     });
+
+    response.cookies.set({
+      name: 'accessToken',
+      value: accessToken,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+      maxAge: 5 * 60, // 5 phút, giữ nguyên thời hạn như trong signin/route.ts
+    });
+
+    return response;
   } catch (error) {
     console.error('Refresh token error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

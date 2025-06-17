@@ -10,7 +10,7 @@ interface JwtPayload {
 }
 
 export const signJwt = (payload: JwtPayload) => {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '5s' });
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '10s' });
 };
 
 export const signRefreshToken = (payload: JwtPayload) => {

@@ -1,17 +1,14 @@
 services:
-  # Database service (MongoDB example)
   db:
     image: mongo:latest
     container_name: db
-    env_file:
-      - .env.development
+    command: ['--replSet', 'rs0', '--bind_ip_all']
     ports:
       - '27017:27017'
     volumes:
       - db_data:/data/db
     networks:
       - app-network
-
   # Next.js application
   web:
     build:
@@ -22,7 +19,7 @@ services:
       - '3000:3000'
     environment:
       # Next.js sẽ dùng biến này (cấu hình ở next.config.js hoặc process.env)
-      MONGODB_URI: mongodb://admin:secret@db:27017/mydb?authSource=admin
+      MONGODB_URI: mongodb://db:27017/mydb?replicaSet=rs0
     depends_on:
       - db
     networks:

@@ -1,10 +1,12 @@
 import { signupFormSchema } from '@/features/auth/components/SignupForm/SignupSchema';
 import { badRequest, ok, serverError } from '@/helper/apiRes';
+import prisma from '@/lib/connectDB/prisma';
+import bcrypt from 'bcryptjs';
 
 export async function POST(req: Request) {
   try {
+    //validate
     const body = await req.json();
-
     const parse = signupFormSchema.safeParse(body);
     if (!parse.success) {
       const errors = parse.error.flatten().fieldErrors;
@@ -16,15 +18,36 @@ export async function POST(req: Request) {
     }
     const { firstName, lastName, email, password } = parse.data;
 
-    const user = {
-      id: 'mock-id-123',
-      firstName,
-      lastName,
-      email,
-      password
+    //Check existing mail
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      return badRequest({
+        code: 'USER_EXISTS',
+        message: 'Email is already registered',
+      })
+    }
+
+    //Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    //Create user
+    const newUser = await prisma.user.create({
+      data: {
+        firstName,
+        lastName,
+        email,
+        password: hashedPassword,
+      }
+    })
+
+    const userPayload = {
+      id: newUser.id,
+      firstName: newUser.firstName,
+      lastName: newUser.lastName,
+      email: newUser.email,
     };
 
-    return ok({ user }, 201);
+    return ok({ user: userPayload }, 201);
   } catch (err) {
     console.error('Signup error:', err);
     return serverError({
