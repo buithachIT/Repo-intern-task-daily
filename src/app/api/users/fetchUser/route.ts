@@ -12,7 +12,6 @@ export async function GET(req: NextRequest) {
   if (!decoded) {
     return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
   }
-
   // Token hợp lệ → trả về thông tin user
   return NextResponse.json({
     user: decoded,

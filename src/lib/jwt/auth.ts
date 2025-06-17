@@ -1,16 +1,11 @@
+import { JwtPayload } from '@/types/jwt';
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secret-key'; // move to .env
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || 'refresh-secret-key';
 
-interface JwtPayload {
-  id: string;
-  email: string;
-  firstName?: string;
-}
-
 export const signJwt = (payload: JwtPayload) => {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '10s' });
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '5m' });
 };
 
 export const signRefreshToken = (payload: JwtPayload) => {

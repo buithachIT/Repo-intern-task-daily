@@ -15,19 +15,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
   email     String   @unique
   firstName      String?
   lastName      String?
   password      String 
   posts     Post[]
+  reviews   Review[] 
 }
 
 model Post {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  title    String
+  content  String
+  userId   String   @db.ObjectId
+  user     User     @relation(fields: [userId], references: [id])
+  reviews  Review[]
+}
+
+model Review {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  String   @db.ObjectId
+  content   String
+  rating    Int
+  postId    String   @db.ObjectId     // ✔ bổ sung này nếu chưa có
+  post      Post     @relation(fields: [postId], references: [id])
+  createdAt DateTime @default(now())
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
 }
