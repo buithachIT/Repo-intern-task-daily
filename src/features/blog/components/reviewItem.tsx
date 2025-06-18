@@ -1,8 +1,8 @@
-import { ReviewType } from "@/types/post";
+import { ReviewWithUser } from "@/types/post";
 import { Star } from "lucide-react";
 
 type Props = {
-    review: ReviewType
+    review: ReviewWithUser
 };
 
 export default function ReviewItem({ review }: Props) {

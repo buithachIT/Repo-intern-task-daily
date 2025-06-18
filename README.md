@@ -23,7 +23,7 @@ A modern real estate platform built with Next.js 14, featuring property listings
 
 ### Frontend
 
-- [Next.js 14](https://nextjs.org/) - React framework with App Router
+- [Next.js 15](https://nextjs.org/) - React framework with App Router
 - [TypeScript](https://www.typescriptlang.org/) - Type safety
 - [Tailwind CSS](https://tailwindcss.com/) - Styling
 - [SWR](https://swr.vercel.app/) - Data fetching and caching
@@ -80,6 +80,34 @@ npm run dev
 yarn dev
 ```
 
+## 🐳 Running with Docker Compose
+
+To run the entire application stack using Docker Compose:
+
+1. Make sure you have [Docker](https://www.docker.com/get-started) and [Docker Compose](https://docs.docker.com/compose/install/) installed.
+
+2. Copy the example environment file and fill in the required variables:
+
+```bash
+cp .env.example .env.local
+```
+
+3. Start all services:
+
+```bash
+docker-compose up --build
+```
+
+This command will build the images (if needed) and start all services defined in the `docker-compose.yml` file.
+
+4. The application should now be accessible at [http://localhost:3000](http://localhost:3000) (or the port specified in your compose file).
+
+To stop the services, press `Ctrl+C` in the terminal and run:
+
+```bash
+docker-compose down
+```
+
 ## 🏗️ Project Structure
 
 # Development
@@ -93,6 +121,3 @@ env-cmd -f .env.qa npm run dev
 # Production build
 
 env-cmd -f .env.production npm run build
-
-First build:
-![alt text](image.png)

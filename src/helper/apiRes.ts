@@ -13,6 +13,11 @@ export function badRequest(error: JsonObj) {
 export function serverError(error: JsonObj) {
     return NextResponse.json({ success: false, error }, { status: 500 });
 }
+
 export function unauthorized(error: JsonObj) {
+    return NextResponse.json({ success: false, error }, { status: 401 });
+}
+
+export function invalidToken(error: JsonObj) {
     return NextResponse.json({ success: false, error }, { status: 401 });
 }

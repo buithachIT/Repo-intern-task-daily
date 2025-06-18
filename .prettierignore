@@ -1,0 +1,17 @@
+# .prettierignore
+node_modules/
+.next/
+dist/
+build/
+out/
+src/generated/
+*.config.js
+*.config.mjs
+*.config.ts
+.env*
+.cache/
+*.log
+*.tmp
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

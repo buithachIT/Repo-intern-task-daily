@@ -3,6 +3,8 @@ import { badRequest, ok, serverError, unauthorized } from '@/helper/apiRes';
 import { signJwt, signRefreshToken } from '@/lib/jwt/auth';
 import prisma from '@/lib/connectDB/prisma';
 import bcrypt from 'bcryptjs';
+import { STORAGE_KEY } from '@/config/storageKeys';
+import { EXPIRED_TOKEN } from '@/config/expired_jwt';
 
 export async function POST(req: Request) {
   try {
@@ -38,7 +40,6 @@ export async function POST(req: Request) {
         message: 'Email or password is incorrect',
       });
     }
-    console.log(email, password);
     const userPayload = {
       id: user.id,
       firstName: user.firstName || undefined,
@@ -56,30 +57,30 @@ export async function POST(req: Request) {
     );
 
     response.cookies.set({
-      name: 'refreshToken',
+      name: STORAGE_KEY.REFRESH_TOKEN,
       value: refreshToken,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       path: '/',
-      maxAge: 7 * 24 * 60 * 60, // 7 ngày
+      maxAge: EXPIRED_TOKEN.EXPIRED_REFRESH_TOKEN, // 7 ngày
     });
     response.cookies.set({
-      name: 'accessToken',
+      name: STORAGE_KEY.TOKEN,
       value: accessToken,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       path: '/',
-      maxAge: 5 * 60, //5phút
+      maxAge: EXPIRED_TOKEN.EXPIRED_ACCESS_TOKEN,
     });
 
     return response;
   } catch (err) {
-    console.error('Signin error:', err);
     return serverError({
       code: 'INTERNAL_SERVER_ERROR',
       message: 'Could not process sign in request',
+      err,
     });
   }
 }

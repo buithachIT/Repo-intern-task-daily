@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import { getReviewByPost } from '@/lib/action/post';
-import { ReviewType, ReviewResponse } from '@/types/post';
+import { ReviewResponse } from '@/types/post';
 
 export function useReviews(postId: string) {
   const { data, error, isLoading, mutate } = useSWR<ReviewResponse>(

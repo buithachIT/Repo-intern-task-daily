@@ -21,4 +21,3 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
       </Suspense>
     </div>);
 };
-

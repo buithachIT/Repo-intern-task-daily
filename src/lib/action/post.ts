@@ -1,6 +1,5 @@
 import { PostResponse, ReviewResponse } from '@/types/post';
 import { handleFetch } from "@/helper/api";
-import { unknown } from 'zod';
 
 export const getAllPostAPI = () => {
     return handleFetch<PostResponse>('/api/post/');

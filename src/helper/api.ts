@@ -1,3 +1,4 @@
+import { ROUTES } from '@/config/routes';
 import { apiPath } from '@/lib/api/utils';
 
 type HandlerOptions = {
@@ -48,7 +49,8 @@ export const asyncHandlerWrapper = async <T>(
 export async function handleFetch<T>(
   url: string,
   bodyObj?: unknown,
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE' = bodyObj ? 'POST' : 'GET'
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' = bodyObj ? 'POST' : 'GET',
+  skipAuthRedirect = false
 ): Promise<T> {
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
@@ -62,26 +64,28 @@ export async function handleFetch<T>(
   });
 
   if (res.status === 401) {
-    try {
-      const refreshRes = await fetch(apiPath('/api/auth/refresh'), {
-        method: 'POST',
-        credentials: 'include',
-      });
+    if (!skipAuthRedirect && !url.includes('/signin')) {
+      try {
+        const refreshRes = await fetch(apiPath('/api/auth/refresh'), {
+          method: 'POST',
+          credentials: 'include',
+        });
 
-      if (!refreshRes.ok) {
+        if (!refreshRes.ok) {
+          window.location.href = '/login';
+          throw new Error('Authentication failed: Could not refresh token');
+        }
+
+        res = await fetch(apiPath(url), {
+          method,
+          headers,
+          credentials: 'include',
+          body: bodyObj ? JSON.stringify(bodyObj) : undefined,
+        });
+      } catch (refreshError) {
         window.location.href = '/login';
-        throw new Error('Authentication failed: Could not refresh token');
+        throw new Error('Authentication failed');
       }
-
-      res = await fetch(apiPath(url), {
-        method,
-        headers,
-        credentials: 'include',
-        body: bodyObj ? JSON.stringify(bodyObj) : undefined,
-      });
-    } catch (refreshError) {
-      window.location.href = '/login';
-      throw new Error('Authentication failed');
     }
   }
 

@@ -1,37 +1,29 @@
 'use client'
 import { asyncHandlerWrapper } from "@/helper/api";
 import ReviewItem from "./reviewItem";
-import { ReviewType } from "@/types/post";
+import { ReviewWithUser } from "@/types/post";
 import { toast } from "react-toastify";
-import CreateReview from "./createReview";
+import CreateReview from "./createReviewForm/createReview";
 import { useReviews } from "@/hooks/useReviews";
 import ReviewItemSkeleton from "@/components/skeleton/reviewItemSkeleton";
-import { createReviewByPost, getReviewByPost } from "@/lib/action/post";
-
-type Review = {
-    id: number;
-    userId: string;
-    content: string;
-    rating: number;
-};
+import { createReviewByPost } from "@/lib/action/post";
 
 export default function ReviewList({ slug }: { slug: string }) {
     const { reviews, isLoading, error, mutate } = useReviews(slug);
 
     if (isLoading) return <div><ReviewItemSkeleton /></div>;
-    if (error) return <p className="text-sm italic text-gray-400">Không thể tải đánh giá.</p>;
-    if (!reviews || !Array.isArray(reviews)) {
+    if (error || !reviews || !Array.isArray(reviews)) {
         return <p className="text-sm italic text-gray-400">Không thể tải đánh giá.</p>;
     }
     const handleReviewSubmit = async (content: string, rating: number) => {
-        const optimisticReview: ReviewType = {
+        const optimisticReview: ReviewWithUser = {
             id: 'temp',
             content,
             rating,
             postId: slug,
-            createdAt: new Date().toISOString(),
+            createdAt: new Date(),
             userId: 'temp',
-            user: { firstName: 'You', lastName: '' }
+            user: { firstName: 'You', lastName: '', id: '' }
         };
 
         mutate(

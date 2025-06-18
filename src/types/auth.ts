@@ -1,19 +1,18 @@
+import { User } from '@/generated/prisma/client'
 export type SignUpResponse = {
-    success: true;
-    data: {
-        user: { id: string; firstName: string; lastName: string; email: string };
-    };
+  success: true;
+  data: {
+    user: Pick<User, 'id' | 'firstName' | 'lastName' | 'email'>;
+  };
 };
 
 export type SignInResponse = {
-    success: true;
-    data: {
-        user: { id: string; firstName: string; email: string };
-        accessToken: string;
-    };
+  success: true;
+  data: {
+    user: Pick<User, 'id' | 'email' | 'firstName' | 'lastName'>;
+    accessToken: string;
+  };
 };
 export type FetchUser = {
-    user: {
-        id: string; firstName: string; email: string
-    }
-}
+  user: Pick<User, 'email' | 'firstName' | 'id' | 'lastName'>
+};
