@@ -9,9 +9,6 @@ const FeatureRoomRentalList = () => {
     const onPageChange = (page: number) => {
         setPage(page);
     };
-    const totalPage = useMemo(() => {
-        return Math.ceil(fakeProperties.length / PAGE_SIZE);
-    }, [])
 
     const currentPageRooms = useMemo(() => {
         const start = (page - 1) * PAGE_SIZE;

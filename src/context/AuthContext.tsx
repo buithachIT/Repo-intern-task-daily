@@ -5,7 +5,6 @@ import { fetchUserAction } from '@/lib/action/user';
 import { logoutAPI } from '@/lib/action/auth';
 import { toast } from 'react-toastify';
 import { SafeUser } from '@/types/user';
-import { unknown } from 'zod';
 
 type AuthContextType = {
   user: SafeUser | null;

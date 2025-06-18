@@ -1,4 +1,3 @@
-import { ROUTES } from '@/config/routes';
 import { apiPath } from '@/lib/api/utils';
 
 type HandlerOptions = {
