@@ -32,7 +32,7 @@ export default function ReviewList({ slug }: { slug: string }) {
         );
         await asyncHandlerWrapper(
             async () => {
-                const res = await createReviewByPost(slug, { content, rating })
+                await createReviewByPost(slug, { content, rating })
                 toast.success("Gửi đánh giá thành công!");
                 mutate();
             },

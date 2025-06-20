@@ -44,6 +44,7 @@ export async function POST(req: Request) {
       id: user.id,
       firstName: user.firstName || undefined,
       email: user.email,
+      role: user.role
     };
 
     const accessToken = signJwt(userPayload);

@@ -66,10 +66,6 @@ export default function CreateReview({ postId, onSubmit }: Props) {
                         </FormItem>
                     )}
                 >
-
-
-
-
                 </FormField>
                 <FormField
                     control={form.control}

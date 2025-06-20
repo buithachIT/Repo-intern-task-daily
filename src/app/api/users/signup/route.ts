@@ -37,6 +37,7 @@ export async function POST(req: Request) {
         lastName,
         email,
         password: hashedPassword,
+        role: "USER"
       },
     });
 
@@ -45,6 +46,7 @@ export async function POST(req: Request) {
       firstName: newUser.firstName,
       lastName: newUser.lastName,
       email: newUser.email,
+      role: newUser.role
     };
 
     return ok({ user: userPayload }, 201);

@@ -19,11 +19,17 @@ model User {
   email     String   @unique
   firstName      String?
   lastName      String?
+  role     Role     @default(USER)
   password      String 
   posts     Post[]
   reviews   Review[] 
 }
 
+enum Role {
+  USER
+  ADMIN 
+
+}
 model Post {
   id       String   @id @default(auto()) @map("_id") @db.ObjectId
   title    String
