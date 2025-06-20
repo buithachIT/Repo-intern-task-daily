@@ -1,7 +1,7 @@
 
 import { PrismaClient } from '@/generated/prisma';
 declare global {
-    // cho phép caching trên env development
+
     // eslint-disable-next-line no-var
     var prisma: PrismaClient | undefined;
 }

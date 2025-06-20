@@ -1,4 +1,3 @@
-import PropertyCard, { fakeProperties } from "../propertyCard";
 import FeatureRoomRentalList from "./featureRoomRentalList";
 
 const FeatureRoomRental = () => {

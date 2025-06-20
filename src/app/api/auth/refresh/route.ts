@@ -1,17 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyRefreshToken, signJwt } from '@/lib/jwt/auth';
+import { STORAGE_KEY } from '@/config/storageKeys';
+import { EXPIRED_TOKEN } from '@/config/expired_jwt';
+import { badRequest, invalidToken } from '@/helper/apiRes';
 
 export async function POST(req: NextRequest) {
   try {
-    const refreshToken = req.cookies.get('refreshToken')?.value;
+    const refreshToken = req.cookies.get(STORAGE_KEY.REFRESH_TOKEN)?.value;
 
     if (!refreshToken) {
-      return NextResponse.json({ error: 'Refresh token is required' }, { status: 400 });
+      return badRequest({ error: 'Refresh token is required' });
     }
 
     const decoded = verifyRefreshToken(refreshToken);
     if (!decoded) {
-      return NextResponse.json({ error: 'Invalid refresh token' }, { status: 401 });
+      return invalidToken({ error: 'Invalid refresh token' });
     }
 
     // Tạo access token mới
@@ -31,18 +34,17 @@ export async function POST(req: NextRequest) {
     });
 
     response.cookies.set({
-      name: 'accessToken',
+      name: STORAGE_KEY.TOKEN,
       value: accessToken,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       path: '/',
-      maxAge: 5 * 60, // 5 phút, giữ nguyên thời hạn như trong signin/route.ts
+      maxAge: EXPIRED_TOKEN.EXPIRED_ACCESS_TOKEN,
     });
 
     return response;
   } catch (error) {
-    console.error('Refresh token error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

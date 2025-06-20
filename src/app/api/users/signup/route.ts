@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       return badRequest({
         code: 'USER_EXISTS',
         message: 'Email is already registered',
-      })
+      });
     }
 
     //Hash password
@@ -37,8 +37,8 @@ export async function POST(req: Request) {
         lastName,
         email,
         password: hashedPassword,
-      }
-    })
+      },
+    });
 
     const userPayload = {
       id: newUser.id,
@@ -49,10 +49,10 @@ export async function POST(req: Request) {
 
     return ok({ user: userPayload }, 201);
   } catch (err) {
-    console.error('Signup error:', err);
     return serverError({
       code: 'INTERNAL_SERVER_ERROR',
       message: 'Could not process sign up request',
+      err,
     });
   }
 }

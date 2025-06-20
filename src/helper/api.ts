@@ -1,4 +1,4 @@
-import { apiPath } from "@/lib/api/utils";
+import { apiPath } from '@/lib/api/utils';
 
 type HandlerOptions = {
   throwError?: boolean;
@@ -29,7 +29,7 @@ const isPromiseFunction = (fn: unknown): fn is () => Promise<unknown> =>
 export const asyncHandlerWrapper = async <T>(
   handler: () => Promise<T> | T,
   errorHandler: (msg: string) => void,
-  options?: HandlerOptions,
+  options?: HandlerOptions
 ): Promise<T | Error> => {
   const { throwError = false } = options || {};
 
@@ -48,33 +48,52 @@ export const asyncHandlerWrapper = async <T>(
 export async function handleFetch<T>(
   url: string,
   bodyObj?: unknown,
-  method: "GET" | "POST" | "PUT" | "DELETE" = bodyObj ? "POST" : "GET"
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' = bodyObj ? 'POST' : 'GET',
+  skipAuthRedirect = false
 ): Promise<T> {
-  const token = typeof window !== "undefined"
-    ? localStorage.getItem("accessToken")
-    : null;
-
   const headers: HeadersInit = {
-    "Content-Type": "application/json",
-    ...(token && { Authorization: `Bearer ${token}` }),
+    'Content-Type': 'application/json',
   };
 
-  const res = await fetch(apiPath(url), {
+  let res = await fetch(apiPath(url), {
     method,
     headers,
+    credentials: 'include',
     body: bodyObj ? JSON.stringify(bodyObj) : undefined,
   });
+
+  if (res.status === 401) {
+    if (!skipAuthRedirect && !url.includes('/signin')) {
+      try {
+        const refreshRes = await fetch(apiPath('/api/auth/refresh'), {
+          method: 'POST',
+          credentials: 'include',
+        });
+
+        if (!refreshRes.ok) {
+          window.location.href = '/login';
+          throw new Error('Authentication failed: Could not refresh token');
+        }
+
+        res = await fetch(apiPath(url), {
+          method,
+          headers,
+          credentials: 'include',
+          body: bodyObj ? JSON.stringify(bodyObj) : undefined,
+        });
+      } catch (refreshError) {
+        window.location.href = '/login';
+        throw new Error('Authentication failed');
+      }
+    }
+  }
 
   const payload = await res.json().catch(() => null);
 
   if (!res.ok) {
-    const message =
-      payload?.error?.message ||
-      payload?.message ||
-      `Request failed: ${res.status}`;
+    const message = payload?.error?.message || payload?.message || `Request failed: ${res.status}`;
     throw new Error(message);
   }
 
   return payload as T;
 }
-

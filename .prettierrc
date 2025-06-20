@@ -5,5 +5,7 @@
   "trailingComma": "es5",
   "printWidth": 100,
   "bracketSpacing": true,
-  "arrowParens": "avoid"
+  "arrowParens": "avoid",
+  "endOfLine": "lf",
+  "plugins": ["prettier-plugin-tailwindcss"]
 }

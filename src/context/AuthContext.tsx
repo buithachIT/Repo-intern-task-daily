@@ -4,12 +4,11 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { fetchUserAction } from '@/lib/action/user';
 import { logoutAPI } from '@/lib/action/auth';
 import { toast } from 'react-toastify';
-
-type User = { id: string; email: string; firstName?: string; exp?: number; iat?: number };
+import { SafeUser } from '@/types/user';
 
 type AuthContextType = {
-  user: User | null;
-  updateUser: (user: User) => void;
+  user: SafeUser | null;
+  updateUser: (user: SafeUser) => void;
   logout: () => void;
   isLoading: boolean;
 };
@@ -17,11 +16,11 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<SafeUser | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // fetchUser 
-  const updateUser = (u: User) => {
+  const updateUser = (u: SafeUser) => {
     setUser(u);
   };
 
@@ -33,7 +32,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const { user: u } = await fetchUserAction();
         setUser(u);
       } catch (err) {
-        console.error('Fetch user failed', err);
         toast.info('Login to explore more!');
       } finally {
         setIsLoading(false);
@@ -45,7 +43,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await logoutAPI();
     } catch (err) {
-      console.error('Logout failed', err);
+      toast.error("Unknown error")
     } finally {
       setUser(null);
     }

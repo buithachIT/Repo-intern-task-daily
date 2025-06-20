@@ -23,7 +23,6 @@ export function middleware(request: NextRequest) {
 
   // 3. Nếu đang gọi API signin/signup thì cho tiếp
 
-
   // 4. Các route còn lại đều là protected → nếu không có token thì ép về login
   if (!token) {
     return NextResponse.redirect(new URL(ROUTES.LOGIN, request.url));

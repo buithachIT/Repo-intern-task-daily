@@ -1,4 +1,10 @@
+import BlogListSkeleton from "@/components/skeleton/blogListSkeleton";
+import BlogList from "@/features/blog/components/blogList";
+import { Suspense } from "react";
 const Blog = () => {
-  return <p>Blog page</p>;
+  return (
+    <Suspense fallback={<BlogListSkeleton />}> <BlogList /></Suspense>
+
+  );
 };
 export default Blog;
