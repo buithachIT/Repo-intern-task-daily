@@ -4,6 +4,7 @@ import OurPartner from '@/features/common/components/ourPartner';
 import FeatureRoomRental from '@/features/properties/components/featureRoomRental/featureRoomRental';
 
 export default function Home() {
+
   return (
     <main className="min-h-screen">
       <HomeBanner />

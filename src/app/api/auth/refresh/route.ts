@@ -1,3 +1,4 @@
+import { Role } from './../../../../generated/prisma/index.d';
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyRefreshToken, signJwt } from '@/lib/jwt/auth';
 import { STORAGE_KEY } from '@/config/storageKeys';
@@ -22,6 +23,7 @@ export async function POST(req: NextRequest) {
       id: decoded.id,
       email: decoded.email,
       firstName: decoded.firstName,
+      role: decoded.role,
     });
 
     const response = NextResponse.json({

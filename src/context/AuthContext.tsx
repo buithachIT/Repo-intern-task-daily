@@ -25,12 +25,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
-
     setIsLoading(true);
     const loadUser = async () => {
       try {
         const { user: u } = await fetchUserAction();
         setUser(u);
+        updateUser(u)
       } catch (err) {
         toast.info('Login to explore more!');
       } finally {
